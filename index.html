@@ -2,588 +2,95 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#1687ff">
 <title>Garimpador ML</title>
-
 <style>
-:root{
-  --blue:#1687ff;
-  --blue2:#0066d6;
-  --bg:#f3f6fa;
-  --card:#fff;
-  --text:#14213d;
-  --muted:#718096;
-  --line:#e2e8f0;
-  --green:#16a34a;
-  --orange:#f59e0b;
-  --red:#ef4444;
-}
-
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-.app{
-  max-width:650px;
-  margin:auto;
-  min-height:100vh;
-  padding-bottom:100px;
-}
-
-header{
-  background:linear-gradient(145deg,#1687ff,#0066d6);
-  color:white;
-  padding:28px 22px 30px;
-  border-radius:0 0 32px 32px;
-}
-
-.brand{
-  font-size:30px;
-  font-weight:850;
-}
-
-.subtitle{
-  margin-top:5px;
-  font-size:16px;
-  opacity:.9;
-}
-
-.tabs{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding:18px 14px 8px;
-}
-
-.tabs button{
-  border:0;
-  background:white;
-  color:#65748b;
-  border-radius:18px;
-  padding:13px 17px;
-  font-weight:750;
-  font-size:14px;
-  white-space:nowrap;
-}
-
-.tabs button.active{
-  background:var(--blue);
-  color:white;
-}
-
-main{padding:8px 14px}
-
-.screen{display:none}
-.screen.active{display:block}
-
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:22px;
-  padding:20px;
-  margin-bottom:14px;
-  box-shadow:0 5px 20px rgba(30,60,90,.05);
-}
-
-h2{
-  margin:0 0 8px;
-  font-size:24px;
-}
-
-.muted{
-  color:var(--muted);
-}
-
-.search{
-  width:100%;
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:15px;
-  font-size:16px;
-  margin-top:12px;
-  outline:none;
-}
-
-.filters{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  margin:12px 0;
-}
-
-.filters button{
-  border:1px solid var(--line);
-  background:white;
-  border-radius:13px;
-  padding:10px 13px;
-  white-space:nowrap;
-}
-
-.product{
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:16px;
-  margin-top:12px;
-}
-
-.product-top{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.product-name{
-  font-size:18px;
-  font-weight:800;
-}
-
-.score{
-  min-width:55px;
-  height:55px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#e8f7ee;
-  color:var(--green);
-  font-weight:900;
-  font-size:18px;
-}
-
-.badges{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin:10px 0;
-}
-
-.badge{
-  padding:6px 9px;
-  border-radius:9px;
-  background:#eef5ff;
-  color:#1769c2;
-  font-size:12px;
-  font-weight:700;
-}
-
-.badge.orange{
-  background:#fff5dc;
-  color:#a16207;
-}
-
-.badge.green{
-  background:#e8f7ee;
-  color:#15803d;
-}
-
-.info{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:10px;
-}
-
-.info div{
-  background:#f7f9fc;
-  padding:10px;
-  border-radius:11px;
-}
-
-.info small{
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-}
-
-.info strong{
-  font-size:15px;
-}
-
-.event{
-  border-left:5px solid var(--blue);
-  padding:15px;
-  background:white;
-  border-radius:14px;
-  margin-top:10px;
-}
-
-.event h3{
-  margin:0 0 5px;
-}
-
-.event p{
-  margin:4px 0;
-  color:var(--muted);
-}
-
-.rank{
-  font-size:13px;
-  color:var(--muted);
-  margin-bottom:5px;
-}
-
-.bottom{
-  position:fixed;
-  bottom:12px;
-  left:50%;
-  transform:translateX(-50%);
-  width:min(620px,calc(100% - 28px));
-  background:white;
-  padding:10px;
-  border:1px solid var(--line);
-  border-radius:22px;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
-}
-
-.bottom button{
-  width:100%;
-  border:0;
-  border-radius:15px;
-  padding:15px;
-  background:var(--blue);
-  color:white;
-  font-weight:800;
-  font-size:16px;
-}
+:root{--blue:#1687ff;--blue2:#0666d6;--bg:#f3f6fa;--card:#fff;--text:#14213d;--muted:#718096;--line:#e2e8f0;--green:#16a34a;--orange:#f59e0b;--red:#ef4444}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:linear-gradient(145deg,#1687ff,#2f6fda);color:white;padding:42px 22px 30px;border-radius:0 0 42px 42px}
+.brand{font-size:36px;font-weight:850}.sub{font-size:18px;margin-top:8px;opacity:.92}
+.tabs{display:flex;gap:10px;overflow:auto;padding:16px 14px 10px}.tab{border:0;background:white;border-radius:30px;padding:15px 20px;font-size:17px;font-weight:750;color:var(--muted);white-space:nowrap}.tab.active{background:var(--blue);color:white}
+main{padding:10px 14px 110px}.card{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:22px;margin:12px 0;box-shadow:0 8px 24px #1f3b5b0b}
+h1,h2,h3{margin:0 0 10px}.muted{color:var(--muted)}.search{width:100%;border:1px solid var(--line);border-radius:18px;padding:17px;font-size:17px;margin:10px 0 14px}
+.filters{display:flex;gap:8px;overflow:auto}.filter{border:1px solid #dbe4ef;background:white;color:var(--blue);border-radius:18px;padding:10px 14px;white-space:nowrap}.filter.active{background:#eaf3ff}
+.product{border:1px solid var(--line);border-radius:22px;padding:18px;margin-top:14px}.top{display:flex;justify-content:space-between;gap:12px}.score{min-width:64px;height:64px;border-radius:50%;background:#e8f7ed;color:#34934d;display:grid;place-items:center;font-size:22px;font-weight:850}.badge{display:inline-block;padding:7px 11px;border-radius:13px;font-weight:750;margin:5px 5px 4px 0;font-size:13px}.hot{background:#e8f7ed;color:#278342}.cat{background:#eaf3ff;color:#266ac1}.good{background:#fff5dc;color:#9a6715}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.metric{background:#f7f9fc;border-radius:16px;padding:13px}.metric b{display:block;font-size:19px;margin-top:4px}
+.actions{display:flex;gap:8px;margin-top:13px}.btn{border:0;border-radius:14px;padding:12px 14px;font-weight:800;background:var(--blue);color:white}.btn.alt{background:#eef4fb;color:var(--blue)}
+.section{display:none}.section.active{display:block}
+.event{border-left:5px solid var(--blue);padding:12px 14px;background:#f8fbff;border-radius:12px;margin:10px 0}.event strong{display:block}
+label{display:block;font-weight:700;margin:12px 0 5px}.input{width:100%;padding:13px;border:1px solid var(--line);border-radius:13px;font-size:16px}.result{font-size:24px;font-weight:850;color:var(--green)}
+.bottom{position:fixed;left:14px;right:14px;bottom:12px;background:#ffffffee;backdrop-filter:blur(12px);padding:9px;border:1px solid var(--line);border-radius:24px;display:flex;gap:9px;box-shadow:0 10px 30px #0002}.bottom button{flex:1;border:0;border-radius:17px;padding:16px;font-size:17px;font-weight:800}.bottom .primary{background:var(--blue);color:white}.small{font-size:13px}
 </style>
 </head>
-
 <body>
-
-<div class="app">
-
-<header>
-  <div class="brand">🔎 Garimpador ML</div>
-  <div class="subtitle">Encontre oportunidades antes da concorrência</div>
-</header>
+<header><div class="brand">🔎 Garimpador ML</div><div class="sub">Encontre oportunidades antes da concorrência</div></header>
 
 <nav class="tabs">
-  <button class="active" data-tab="garimpo">🔥 Garimpo</button>
-  <button data-tab="tendencias">📈 Tendências</button>
-  <button data-tab="sazonal">📅 Sazonal</button>
-  <button data-tab="favoritos">⭐ Favoritos</button>
+<button class="tab active" onclick="tab('garimpo',this)">🔥 Garimpo</button>
+<button class="tab" onclick="tab('tendencias',this)">📈 Tendências</button>
+<button class="tab" onclick="tab('sazonal',this)">📅 Sazonal</button>
+<button class="tab" onclick="tab('simulador',this)">💰 Lucro</button>
 </nav>
 
 <main>
-
-<section id="garimpo" class="screen active">
-
-<div class="card">
-<h2>🔥 Produtos em destaque</h2>
-<div class="muted">Ranking demonstrativo de oportunidades.</div>
-
-<input id="search" class="search" placeholder="🔎 Pesquisar produto...">
-
+<section id="garimpo" class="section active">
+<div class="card"><h2>🔥 Produtos em destaque</h2><p class="muted">Ranking demonstrativo de oportunidades — pronto para receber dados reais.</p>
+<input id="search" class="search" placeholder="🔎 Pesquisar produto..." oninput="render()">
 <div class="filters">
-<button onclick="filterProducts('todos')">Todos</button>
-<button onclick="filterProducts('eletronicos')">Eletrônicos</button>
-<button onclick="filterProducts('casa')">Casa</button>
-<button onclick="filterProducts('brinquedos')">Brinquedos</button>
-</div>
-
-<div id="products"></div>
-</div>
-
+<button class="filter active" onclick="filterCat('Todos',this)">Todos</button><button class="filter" onclick="filterCat('Eletrônicos',this)">Eletrônicos</button><button class="filter" onclick="filterCat('Casa',this)">Casa</button><button class="filter" onclick="filterCat('Brinquedos',this)">Brinquedos</button><button class="filter" onclick="filterCat('Ferramentas',this)">Ferramentas</button>
+</div><div id="list"></div></div>
 </section>
 
-<section id="tendencias" class="screen">
-
-<div class="card">
-<h2>📈 Radar de tendências</h2>
-<p class="muted">Produtos que apresentam potencial de crescimento.</p>
-
-<div class="event">
-<h3>🎮 Acessórios para games</h3>
-<p>Alta procura e possibilidade de crescimento.</p>
-<strong>Horizonte: próximos 30 dias</strong>
-</div>
-
-<div class="event">
-<h3>🏠 Organização doméstica</h3>
-<p>Categoria com demanda recorrente.</p>
-<strong>Horizonte: próximos 60 dias</strong>
-</div>
-
-<div class="event">
-<h3>🧸 Brinquedos</h3>
-<p>Categoria para monitorar antes do Dia das Crianças.</p>
-<strong>Horizonte: próximos 90 dias</strong>
-</div>
-
-</div>
-
-<div class="card">
-<h2>⏱️ Horizonte</h2>
-<div class="info">
-<div><small>Agora</small><strong>Alta demanda</strong></div>
-<div><small>30 dias</small><strong>Em crescimento</strong></div>
-<div><small>60 dias</small><strong>Monitorar</strong></div>
-<div><small>90 dias</small><strong>Sazonal</strong></div>
-</div>
-</div>
-
+<section id="tendencias" class="section">
+<div class="card"><h2>📈 Tendências</h2><p class="muted">Produtos com potencial de crescimento. O score considera procura, concorrência, margem e sazonalidade.</p><div id="trend"></div></div>
 </section>
 
-<section id="sazonal" class="screen">
+<section id="sazonal" class="section">
+<div class="card"><h2>📅 Calendário sazonal</h2><p class="muted">Planeje compras com antecedência.</p>
+<div class="event"><strong>🧸 Dia das Crianças — 12/10</strong>Começar a analisar brinquedos e presentes com 45–60 dias de antecedência.</div>
+<div class="event"><strong>🛍️ Black Friday — novembro</strong>Foco em eletrônicos, acessórios, casa e produtos de alto giro.</div>
+<div class="event"><strong>🎄 Natal — dezembro</strong>Brinquedos, presentes, utilidades e eletrônicos.</div>
+<div class="event"><strong>💝 Dia das Mães — maio</strong>Beleza, casa, presentes e eletrônicos.</div>
+<div class="event"><strong>👨‍👩‍👧 Dia dos Pais — agosto</strong>Ferramentas, eletrônicos, acessórios e presentes.</div>
+</div></section>
 
-<div class="card">
-<h2>📅 Calendário de oportunidades</h2>
-<p class="muted">Planeje seu estoque antes da demanda aumentar.</p>
-
-<div class="event">
-<h3>🧸 Dia das Crianças</h3>
-<p>Brinquedos, jogos, eletrônicos infantis e presentes.</p>
-<strong>Preparação: começar a monitorar com antecedência.</strong>
-</div>
-
-<div class="event">
-<h3>🛍️ Black Friday</h3>
-<p>Eletrônicos, acessórios, casa e utilidades.</p>
-<strong>Foco: produtos com histórico forte de vendas.</strong>
-</div>
-
-<div class="event">
-<h3>🎄 Natal</h3>
-<p>Presentes, brinquedos, eletrônicos e utilidades.</p>
-<strong>Foco: produtos de alto giro.</strong>
-</div>
-
-<div class="event">
-<h3>📚 Volta às aulas</h3>
-<p>Material escolar, organização e acessórios.</p>
-<strong>Foco: antecipar estoque.</strong>
-</div>
-
-</div>
-
-</section>
-
-<section id="favoritos" class="screen">
-
-<div class="card">
-<h2>⭐ Meus favoritos</h2>
-<p class="muted">Produtos que você marcou para acompanhar.</p>
-<div id="favorites"></div>
-</div>
-
-</section>
-
+<section id="simulador" class="section">
+<div class="card"><h2>💰 Simulador de lucro</h2><p class="muted">Estime o resultado antes de comprar o estoque.</p>
+<label>Custo do produto</label><input id="cost" class="input" type="number" value="26.60" oninput="calc()">
+<label>Preço de venda</label><input id="price" class="input" type="number" value="39.90" oninput="calc()">
+<label>Taxas + custos (%)</label><input id="fee" class="input" type="number" value="18" oninput="calc()">
+<label>Quantidade</label><input id="qty" class="input" type="number" value="10" oninput="calc()">
+<div class="grid"><div class="metric">Lucro/un.<b id="profit">R$ 0,00</b></div><div class="metric">Margem<b id="margin">0%</b></div><div class="metric">Lucro estoque<b id="stock">R$ 0,00</b></div><div class="metric">ROI<b id="roi">0%</b></div></div>
+</div></section>
 </main>
 
-<div class="bottom">
-<button onclick="window.scrollTo({top:0,behavior:'smooth'})">
-⬆️ Voltar ao topo
-</button>
-</div>
-
-</div>
+<div class="bottom"><button onclick="tab('garimpo',document.querySelector('.tab'))">⬆️ Topo</button><button class="primary" onclick="tab('simulador',document.querySelectorAll('.tab')[3])">💰 Simular lucro</button></div>
 
 <script>
-
 const products=[
-
-{
-name:"Balança digital corporal",
-cat:"casa",
-score:94,
-price:"R$ 39,90",
-cost:"R$ 26,60",
-margin:"Boa",
-trend:"Alta",
-season:"Saúde / fitness"
-},
-
-{
-name:"Carregador Turbo USB-C",
-cat:"eletronicos",
-score:92,
-price:"R$ 69,90",
-cost:"R$ 33,00",
-margin:"Muito boa",
-trend:"Alta",
-season:"Ano todo"
-},
-
-{
-name:"Power Bank 20.000mAh",
-cat:"eletronicos",
-score:90,
-price:"R$ 119,90",
-cost:"R$ 65,00",
-margin:"Boa",
-trend:"Alta",
-season:"Viagens"
-},
-
-{
-name:"Fone Bluetooth",
-cat:"eletronicos",
-score:88,
-price:"R$ 79,90",
-cost:"R$ 35,00",
-margin:"Boa",
-trend:"Crescente",
-season:"Ano todo"
-},
-
-{
-name:"Organizador doméstico",
-cat:"casa",
-score:86,
-price:"R$ 49,90",
-cost:"R$ 22,00",
-margin:"Muito boa",
-trend:"Crescente",
-season:"Ano todo"
-},
-
-{
-name:"Kit brinquedo educativo",
-cat:"brinquedos",
-score:91,
-price:"R$ 89,90",
-cost:"R$ 42,00",
-margin:"Muito boa",
-trend:"Crescente",
-season:"Dia das Crianças"
-}
-
+{name:"Balança digital corporal",cat:"Casa",cost:26.60,price:39.90,score:94,demand:"Alta",margin:15.8,trend:"Estável / alta"},
+{name:"Carregador Turbo USB-C 35W",cat:"Eletrônicos",cost:33,price:59.90,score:91,demand:"Alta",margin:19.3,trend:"Alta"},
+{name:"Power bank 20.000mAh",cat:"Eletrônicos",cost:65,price:109.90,score:88,demand:"Alta",margin:22.8,trend:"Alta"},
+{name:"Kit ferramenta 46 peças",cat:"Ferramentas",cost:48,price:89.90,score:86,demand:"Alta",margin:21.4,trend:"Crescendo"},
+{name:"Brinquedo educativo infantil",cat:"Brinquedos",cost:35,price:69.90,score:90,demand:"Alta",margin:24.1,trend:"Sazonal forte"},
+{name:"Fone Bluetooth",cat:"Eletrônicos",cost:28,price:59.90,score:84,demand:"Alta",margin:27.1,trend:"Alta"},
+{name:"Organizador multiuso",cat:"Casa",cost:18,price:39.90,score:82,demand:"Média/alta",margin:27.8,trend:"Crescendo"},
+{name:"Trena 5m",cat:"Ferramentas",cost:24,price:49.90,score:80,demand:"Alta",margin:25.8,trend:"Estável"}
 ];
-
-let favorites=JSON.parse(localStorage.getItem("garimpoFav")||"[]");
-
-function render(list=products){
-
-const el=document.getElementById("products");
-
-el.innerHTML=list.map((p,i)=>`
-
-<div class="product">
-
-<div class="product-top">
-
-<div>
-<div class="rank">#${i+1} oportunidade</div>
-<div class="product-name">${p.name}</div>
-</div>
-
-<div class="score">${p.score}</div>
-
-</div>
-
-<div class="badges">
-<span class="badge green">🔥 ${p.trend}</span>
-<span class="badge">${p.season}</span>
-<span class="badge orange">${p.margin}</span>
-</div>
-
-<div class="info">
-
-<div>
-<small>Preço sugerido</small>
-<strong>${p.price}</strong>
-</div>
-
-<div>
-<small>Custo estimado</small>
-<strong>${p.cost}</strong>
-</div>
-
-</div>
-
-<button style="margin-top:12px;width:100%;padding:11px;border:0;border-radius:12px;background:#eef5ff;color:#1265bd;font-weight:800"
-onclick="favorite('${p.name}')">
-
-${favorites.includes(p.name)?"⭐ Remover dos favoritos":"☆ Favoritar"}
-
-</button>
-
-</div>
-
-`).join("");
-
+let category="Todos";
+function money(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+function render(){
+ const q=(document.getElementById('search')?.value||'').toLowerCase();
+ const arr=products.filter(p=>(category==='Todos'||p.cat===category)&&p.name.toLowerCase().includes(q)).sort((a,b)=>b.score-a.score);
+ document.getElementById('list').innerHTML=arr.map((p,i)=>`<div class="product"><div class="top"><div><div class="muted">#${i+1} oportunidade</div><h2>${p.name}</h2><span class="badge hot">🔥 ${p.demand}</span><span class="badge cat">${p.cat}</span><span class="badge good">Boa margem</span></div><div class="score">${p.score}</div></div><div class="grid"><div class="metric">Preço sugerido<b>${money(p.price)}</b></div><div class="metric">Custo estimado<b>${money(p.cost)}</b></div><div class="metric">Margem estimada<b>${p.margin}%</b></div><div class="metric">Tendência<b>${p.trend}</b></div></div><div class="actions"><button class="btn" onclick="useProduct(${products.indexOf(p)})">💰 Simular</button><button class="btn alt" onclick="alert('Produto salvo como favorito!')">⭐ Favoritar</button></div></div>`).join('');
+ document.getElementById('trend').innerHTML=products.slice().sort((a,b)=>b.score-a.score).slice(0,6).map((p,i)=>`<div class="product"><h3>📈 #${i+1} ${p.name}</h3><p class="muted">${p.cat} • Procura ${p.demand}</p><b>Score ${p.score}/100</b><div class="small">Potencial: ${p.trend} • margem estimada ${p.margin}%</div></div>`).join('');
 }
-
-function filterProducts(cat){
-
-if(cat==="todos") return render();
-
-render(products.filter(p=>p.cat===cat));
-
-}
-
-function favorite(name){
-
-if(favorites.includes(name)){
-favorites=favorites.filter(x=>x!==name);
-}else{
-favorites.push(name);
-}
-
-localStorage.setItem("garimpoFav",JSON.stringify(favorites));
-
-render();
-renderFavorites();
-
-}
-
-function renderFavorites(){
-
-const el=document.getElementById("favorites");
-
-const list=products.filter(p=>favorites.includes(p.name));
-
-if(!list.length){
-el.innerHTML="<p class='muted'>Nenhum produto favoritado ainda.</p>";
-return;
-}
-
-el.innerHTML=list.map(p=>`
-<div class="product">
-<div class="product-name">${p.name}</div>
-<div class="badges">
-<span class="badge green">Índice ${p.score}</span>
-<span class="badge">${p.trend}</span>
-</div>
-</div>
-`).join("");
-
-}
-
-document.querySelectorAll(".tabs button").forEach(btn=>{
-
-btn.onclick=()=>{
-
-document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-document.getElementById(btn.dataset.tab).classList.add("active");
-
-window.scrollTo({top:0,behavior:"smooth"});
-
-};
-
-});
-
-document.getElementById("search").addEventListener("input",e=>{
-
-const q=e.target.value.toLowerCase();
-
-render(products.filter(p=>p.name.toLowerCase().includes(q)));
-
-});
-
-render();
-renderFavorites();
-
+function filterCat(c,el){category=c;document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));el.classList.add('active');render()}
+function useProduct(i){document.getElementById('cost').value=products[i].cost;document.getElementById('price').value=products[i].price;calc();tab('simulador',document.querySelectorAll('.tab')[3])}
+function calc(){let c=+document.getElementById('cost').value||0,p=+document.getElementById('price').value||0,f=(+document.getElementById('fee').value||0)/100,q=+document.getElementById('qty').value||0;let profit=p-(p*f)-c;document.getElementById('profit').textContent=money(profit);document.getElementById('margin').textContent=(p?profit/p*100:0).toFixed(1)+'%';document.getElementById('stock').textContent=money(profit*q);document.getElementById('roi').textContent=(c?profit/c*100:0).toFixed(1)+'%'}
+function tab(id,el){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');scrollTo(0,0)}
+render();calc();
 </script>
-
 </body>
 </html>
