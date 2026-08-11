@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1687ff">
+<title>Garimpador ML</title>
+
+<style>
+:root{
+  --blue:#1687ff;
+  --blue2:#0066d6;
+  --bg:#f3f6fa;
+  --card:#fff;
+  --text:#14213d;
+  --muted:#718096;
+  --line:#e2e8f0;
+  --green:#16a34a;
+  --orange:#f59e0b;
+  --red:#ef4444;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.app{
+  max-width:650px;
+  margin:auto;
+  min-height:100vh;
+  padding-bottom:100px;
+}
+
+header{
+  background:linear-gradient(145deg,#1687ff,#0066d6);
+  color:white;
+  padding:28px 22px 30px;
+  border-radius:0 0 32px 32px;
+}
+
+.brand{
+  font-size:30px;
+  font-weight:850;
+}
+
+.subtitle{
+  margin-top:5px;
+  font-size:16px;
+  opacity:.9;
+}
+
+.tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:18px 14px 8px;
+}
+
+.tabs button{
+  border:0;
+  background:white;
+  color:#65748b;
+  border-radius:18px;
+  padding:13px 17px;
+  font-weight:750;
+  font-size:14px;
+  white-space:nowrap;
+}
+
+.tabs button.active{
+  background:var(--blue);
+  color:white;
+}
+
+main{padding:8px 14px}
+
+.screen{display:none}
+.screen.active{display:block}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:20px;
+  margin-bottom:14px;
+  box-shadow:0 5px 20px rgba(30,60,90,.05);
+}
+
+h2{
+  margin:0 0 8px;
+  font-size:24px;
+}
+
+.muted{
+  color:var(--muted);
+}
+
+.search{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:15px;
+  font-size:16px;
+  margin-top:12px;
+  outline:none;
+}
+
+.filters{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin:12px 0;
+}
+
+.filters button{
+  border:1px solid var(--line);
+  background:white;
+  border-radius:13px;
+  padding:10px 13px;
+  white-space:nowrap;
+}
+
+.product{
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  margin-top:12px;
+}
+
+.product-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.product-name{
+  font-size:18px;
+  font-weight:800;
+}
+
+.score{
+  min-width:55px;
+  height:55px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#e8f7ee;
+  color:var(--green);
+  font-weight:900;
+  font-size:18px;
+}
+
+.badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin:10px 0;
+}
+
+.badge{
+  padding:6px 9px;
+  border-radius:9px;
+  background:#eef5ff;
+  color:#1769c2;
+  font-size:12px;
+  font-weight:700;
+}
+
+.badge.orange{
+  background:#fff5dc;
+  color:#a16207;
+}
+
+.badge.green{
+  background:#e8f7ee;
+  color:#15803d;
+}
+
+.info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.info div{
+  background:#f7f9fc;
+  padding:10px;
+  border-radius:11px;
+}
+
+.info small{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.info strong{
+  font-size:15px;
+}
+
+.event{
+  border-left:5px solid var(--blue);
+  padding:15px;
+  background:white;
+  border-radius:14px;
+  margin-top:10px;
+}
+
+.event h3{
+  margin:0 0 5px;
+}
+
+.event p{
+  margin:4px 0;
+  color:var(--muted);
+}
+
+.rank{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:5px;
+}
+
+.bottom{
+  position:fixed;
+  bottom:12px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(620px,calc(100% - 28px));
+  background:white;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+
+.bottom button{
+  width:100%;
+  border:0;
+  border-radius:15px;
+  padding:15px;
+  background:var(--blue);
+  color:white;
+  font-weight:800;
+  font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+  <div class="brand">🔎 Garimpador ML</div>
+  <div class="subtitle">Encontre oportunidades antes da concorrência</div>
+</header>
+
+<nav class="tabs">
+  <button class="active" data-tab="garimpo">🔥 Garimpo</button>
+  <button data-tab="tendencias">📈 Tendências</button>
+  <button data-tab="sazonal">📅 Sazonal</button>
+  <button data-tab="favoritos">⭐ Favoritos</button>
+</nav>
+
+<main>
+
+<section id="garimpo" class="screen active">
+
+<div class="card">
+<h2>🔥 Produtos em destaque</h2>
+<div class="muted">Ranking demonstrativo de oportunidades.</div>
+
+<input id="search" class="search" placeholder="🔎 Pesquisar produto...">
+
+<div class="filters">
+<button onclick="filterProducts('todos')">Todos</button>
+<button onclick="filterProducts('eletronicos')">Eletrônicos</button>
+<button onclick="filterProducts('casa')">Casa</button>
+<button onclick="filterProducts('brinquedos')">Brinquedos</button>
+</div>
+
+<div id="products"></div>
+</div>
+
+</section>
+
+<section id="tendencias" class="screen">
+
+<div class="card">
+<h2>📈 Radar de tendências</h2>
+<p class="muted">Produtos que apresentam potencial de crescimento.</p>
+
+<div class="event">
+<h3>🎮 Acessórios para games</h3>
+<p>Alta procura e possibilidade de crescimento.</p>
+<strong>Horizonte: próximos 30 dias</strong>
+</div>
+
+<div class="event">
+<h3>🏠 Organização doméstica</h3>
+<p>Categoria com demanda recorrente.</p>
+<strong>Horizonte: próximos 60 dias</strong>
+</div>
+
+<div class="event">
+<h3>🧸 Brinquedos</h3>
+<p>Categoria para monitorar antes do Dia das Crianças.</p>
+<strong>Horizonte: próximos 90 dias</strong>
+</div>
+
+</div>
+
+<div class="card">
+<h2>⏱️ Horizonte</h2>
+<div class="info">
+<div><small>Agora</small><strong>Alta demanda</strong></div>
+<div><small>30 dias</small><strong>Em crescimento</strong></div>
+<div><small>60 dias</small><strong>Monitorar</strong></div>
+<div><small>90 dias</small><strong>Sazonal</strong></div>
+</div>
+</div>
+
+</section>
+
+<section id="sazonal" class="screen">
+
+<div class="card">
+<h2>📅 Calendário de oportunidades</h2>
+<p class="muted">Planeje seu estoque antes da demanda aumentar.</p>
+
+<div class="event">
+<h3>🧸 Dia das Crianças</h3>
+<p>Brinquedos, jogos, eletrônicos infantis e presentes.</p>
+<strong>Preparação: começar a monitorar com antecedência.</strong>
+</div>
+
+<div class="event">
+<h3>🛍️ Black Friday</h3>
+<p>Eletrônicos, acessórios, casa e utilidades.</p>
+<strong>Foco: produtos com histórico forte de vendas.</strong>
+</div>
+
+<div class="event">
+<h3>🎄 Natal</h3>
+<p>Presentes, brinquedos, eletrônicos e utilidades.</p>
+<strong>Foco: produtos de alto giro.</strong>
+</div>
+
+<div class="event">
+<h3>📚 Volta às aulas</h3>
+<p>Material escolar, organização e acessórios.</p>
+<strong>Foco: antecipar estoque.</strong>
+</div>
+
+</div>
+
+</section>
+
+<section id="favoritos" class="screen">
+
+<div class="card">
+<h2>⭐ Meus favoritos</h2>
+<p class="muted">Produtos que você marcou para acompanhar.</p>
+<div id="favorites"></div>
+</div>
+
+</section>
+
+</main>
+
+<div class="bottom">
+<button onclick="window.scrollTo({top:0,behavior:'smooth'})">
+⬆️ Voltar ao topo
+</button>
+</div>
+
+</div>
+
+<script>
+
+const products=[
+
+{
+name:"Balança digital corporal",
+cat:"casa",
+score:94,
+price:"R$ 39,90",
+cost:"R$ 26,60",
+margin:"Boa",
+trend:"Alta",
+season:"Saúde / fitness"
+},
+
+{
+name:"Carregador Turbo USB-C",
+cat:"eletronicos",
+score:92,
+price:"R$ 69,90",
+cost:"R$ 33,00",
+margin:"Muito boa",
+trend:"Alta",
+season:"Ano todo"
+},
+
+{
+name:"Power Bank 20.000mAh",
+cat:"eletronicos",
+score:90,
+price:"R$ 119,90",
+cost:"R$ 65,00",
+margin:"Boa",
+trend:"Alta",
+season:"Viagens"
+},
+
+{
+name:"Fone Bluetooth",
+cat:"eletronicos",
+score:88,
+price:"R$ 79,90",
+cost:"R$ 35,00",
+margin:"Boa",
+trend:"Crescente",
+season:"Ano todo"
+},
+
+{
+name:"Organizador doméstico",
+cat:"casa",
+score:86,
+price:"R$ 49,90",
+cost:"R$ 22,00",
+margin:"Muito boa",
+trend:"Crescente",
+season:"Ano todo"
+},
+
+{
+name:"Kit brinquedo educativo",
+cat:"brinquedos",
+score:91,
+price:"R$ 89,90",
+cost:"R$ 42,00",
+margin:"Muito boa",
+trend:"Crescente",
+season:"Dia das Crianças"
+}
+
+];
+
+let favorites=JSON.parse(localStorage.getItem("garimpoFav")||"[]");
+
+function render(list=products){
+
+const el=document.getElementById("products");
+
+el.innerHTML=list.map((p,i)=>`
+
+<div class="product">
+
+<div class="product-top">
+
+<div>
+<div class="rank">#${i+1} oportunidade</div>
+<div class="product-name">${p.name}</div>
+</div>
+
+<div class="score">${p.score}</div>
+
+</div>
+
+<div class="badges">
+<span class="badge green">🔥 ${p.trend}</span>
+<span class="badge">${p.season}</span>
+<span class="badge orange">${p.margin}</span>
+</div>
+
+<div class="info">
+
+<div>
+<small>Preço sugerido</small>
+<strong>${p.price}</strong>
+</div>
+
+<div>
+<small>Custo estimado</small>
+<strong>${p.cost}</strong>
+</div>
+
+</div>
+
+<button style="margin-top:12px;width:100%;padding:11px;border:0;border-radius:12px;background:#eef5ff;color:#1265bd;font-weight:800"
+onclick="favorite('${p.name}')">
+
+${favorites.includes(p.name)?"⭐ Remover dos favoritos":"☆ Favoritar"}
+
+</button>
+
+</div>
+
+`).join("");
+
+}
+
+function filterProducts(cat){
+
+if(cat==="todos") return render();
+
+render(products.filter(p=>p.cat===cat));
+
+}
+
+function favorite(name){
+
+if(favorites.includes(name)){
+favorites=favorites.filter(x=>x!==name);
+}else{
+favorites.push(name);
+}
+
+localStorage.setItem("garimpoFav",JSON.stringify(favorites));
+
+render();
+renderFavorites();
+
+}
+
+function renderFavorites(){
+
+const el=document.getElementById("favorites");
+
+const list=products.filter(p=>favorites.includes(p.name));
+
+if(!list.length){
+el.innerHTML="<p class='muted'>Nenhum produto favoritado ainda.</p>";
+return;
+}
+
+el.innerHTML=list.map(p=>`
+<div class="product">
+<div class="product-name">${p.name}</div>
+<div class="badges">
+<span class="badge green">Índice ${p.score}</span>
+<span class="badge">${p.trend}</span>
+</div>
+</div>
+`).join("");
+
+}
+
+document.querySelectorAll(".tabs button").forEach(btn=>{
+
+btn.onclick=()=>{
+
+document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.getElementById(btn.dataset.tab).classList.add("active");
+
+window.scrollTo({top:0,behavior:"smooth"});
+
+};
+
+});
+
+document.getElementById("search").addEventListener("input",e=>{
+
+const q=e.target.value.toLowerCase();
+
+render(products.filter(p=>p.name.toLowerCase().includes(q)));
+
+});
+
+render();
+renderFavorites();
+
+</script>
+
+</body>
+</html>
