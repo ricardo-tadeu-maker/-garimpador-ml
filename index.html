@@ -100,7 +100,7 @@ async function liveSearch(term){
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),12000);
 
-  const r=await fetch(mIUr1,{signal:controller.signal});
+  const r=await fetch(proxyUrl,{signal:controller.signal});
 
   clearTimeout(timeout);
 
