@@ -84,17 +84,123 @@ let category="Todos";
 function money(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
 async function liveSearch(term){
  const q=(term||document.getElementById('search')?.value||'').trim();
- if(!q){alert('Digite um produto para pesquisar.');return}
- document.getElementById('liveStatus').textContent='Consultando o Mercado Livre...';
+
+ if(!q){
+  alert('Digite um produto para pesquisar.');
+  return;
+ }
+
+ const status=document.getElementById('liveStatus');
+ status.textContent='Consultando o Mercado Livre...';
+
+ const mlUrl='https://api.mercadolibre.com/sites/MLB/search?q='+encodeURIComponent(q)+'&limit=20';
+ const proxyUrl='https://api.allorigins.win/get?url='+encodeURIComponent(mlUrl);
+
  try{
-  const r=await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent('https://api.mercadolibre.com/sites/MLB/search?q='+encodeURIComponent(q)+'&limit=20'));
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const data=await r.json();
-  const rows=(data.results||[]).map(x=>({title:x.title,price:x.price,sold:x.sold_quantity||0,available:x.available_quantity||0,link:x.permalink,thumb:x.thumbnail}));
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),12000);
+
+  const r=await fetch(mIUr1,{signal:controller.signal});
+
+  clearTimeout(timeout);
+
+  if(!r.ok){
+   throw new Error('Proxy HTTP '+r.status);
+  }
+
+  const proxyData=await r.json();
+
+  if(!proxyData.contents){
+   throw new Error('Resposta vazia do proxy');
+  }
+
+  const data=JSON.parse(proxyData.contents);
+
+  const rows=(data.results||[]).map(x=>({
+   title:x.title,
+   price:x.price,
+   sold:x.sold_quantity||0,
+   available:x.available_quantity||0,
+   link:x.permalink,
+   thumb:x.thumbnail
+  }));
+
   rows.sort((a,b)=>b.sold-a.sold);
-  document.getElementById('list').innerHTML='<div class="event"><strong>🔎 '+rows.length+' anúncios encontrados</strong>Ordenados pela quantidade vendida informada pela busca pública.</div>'+rows.map((x,i)=>`<div class="product"><div class="top"><div><div class="muted">#${i+1} • anúncio real</div><h3>${escapeHtml(x.title)}</h3><span class="badge hot">🔥 ${x.sold.toLocaleString('pt-BR')} vendidos</span><span class="badge cat">${money(x.price)}</span></div><div class="score">${Math.min(99,50+Math.round(Math.log10(x.sold+1)*18))}</div></div><div class="grid"><div class="metric">Preço<b>${money(x.price)}</b></div><div class="metric">Vendidos<b>${x.sold.toLocaleString('pt-BR')}</b></div><div class="metric">Disponível<b>${x.available.toLocaleString('pt-BR')}</b></div><div class="metric">Sinal<b>${x.sold>100?'Alta demanda':x.sold>20?'Boa demanda':'Validar'}</b></div></div><div class="actions"><button class="btn" onclick="document.getElementById('price').value=${Number(x.price)||0};calc();tab('simulador',document.querySelectorAll('.tab')[3])">💰 Simular</button><a class="btn alt" href="${x.link||'#'}" target="_blank" rel="noopener">Ver anúncio</a></div></div>`).join('');
-  document.getElementById('liveStatus').textContent='Atualizado agora. Os dados podem variar conforme a API e o anúncio.';
- }catch(e){document.getElementById('liveStatus').textContent='Não foi possível consultar agora. O ranking demonstrativo continua disponível.';alert('A busca ao vivo não respondeu. Tente novamente em alguns segundos.');}
+
+  if(!rows.length){
+   status.textContent='Nenhum anúncio encontrado para esta busca.';
+
+   document.getElementById('list').innerHTML=
+    '<div class="event"><strong>🔎 Nenhum resultado</strong>Não encontramos anúncios para este termo.</div>';
+
+   return;
+  }
+
+  document.getElementById('list').innerHTML=
+   '<div class="event"><strong>🔎 '+rows.length+' anúncios encontrados</strong>Dados obtidos da busca pública do Mercado Livre.</div>'+
+   rows.map((x,i)=>`
+    <div class="product">
+     <div class="top">
+      <div>
+       <div class="muted">#${i+1} • anúncio real</div>
+       <h3>${escapeHtml(x.title)}</h3>
+       <span class="badge hot">🔥 ${x.sold.toLocaleString('pt-BR')} vendidos</span>
+       <span class="badge cat">${money(x.price)}</span>
+      </div>
+
+      <div class="score">
+       ${Math.min(99,50+Math.round(Math.log10(x.sold+1)*18))}
+      </div>
+     </div>
+
+     <div class="grid">
+      <div class="metric">
+       Preço
+       <b>${money(x.price)}</b>
+      </div>
+
+      <div class="metric">
+       Vendidos
+       <b>${x.sold.toLocaleString('pt-BR')}</b>
+      </div>
+
+      <div class="metric">
+       Disponível
+       <b>${x.available.toLocaleString('pt-BR')}</b>
+      </div>
+
+      <div class="metric">
+       Sinal
+       <b>${x.sold>100?'Alta demanda':x.sold>20?'Boa demanda':'Validar'}</b>
+      </div>
+     </div>
+
+     <div class="actions">
+      <button class="btn" onclick="document.getElementById('price').value=${Number(x.price)||0};calc();tab('simulador',document.querySelectorAll('.tab')[3])">
+       💰 Simular
+      </button>
+
+      <a class="btn alt" href="${x.link||'#'}" target="_blank" rel="noopener">
+       Ver anúncio
+      </a>
+     </div>
+    </div>
+   `).join('');
+
+  status.textContent='Atualizado agora. Dados da busca pública do Mercado Livre.';
+
+ }catch(e){
+
+  console.error(e);
+
+  if(e.name==='AbortError'){
+   status.textContent='A consulta demorou demais. Tente novamente.';
+   alert('O Mercado Livre demorou para responder. Tente novamente em alguns segundos.');
+  }else{
+   status.textContent='Não foi possível consultar agora. O ranking demonstrativo continua disponível.';
+   alert('A busca ao vivo não respondeu. Tente novamente em alguns segundos.');
+  }
+ }
 }
 function trendSearch(q){document.getElementById('search').value=q;tab('garimpo',document.querySelector('.tab'));liveSearch(q)}
 function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
