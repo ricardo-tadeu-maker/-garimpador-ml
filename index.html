@@ -87,7 +87,7 @@ async function liveSearch(term){
  if(!q){alert('Digite um produto para pesquisar.');return}
  document.getElementById('liveStatus').textContent='Consultando o Mercado Livre...';
  try{
-  const r=await fetch('https://api.mercadolibre.com/sites/MLB/search?q='+encodeURIComponent(q)+'&limit=20');
+  const r=await fetch('https://api.allorigins.win/raw?url='+encodeURIComponent('https://api.mercadolibre.com/sites/MLB/search?q='+encodeURIComponent(q)+'&limit=20'));
   if(!r.ok) throw new Error('HTTP '+r.status);
   const data=await r.json();
   const rows=(data.results||[]).map(x=>({title:x.title,price:x.price,sold:x.sold_quantity||0,available:x.available_quantity||0,link:x.permalink,thumb:x.thumbnail}));
