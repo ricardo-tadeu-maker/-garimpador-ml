@@ -93,59 +93,28 @@ async function liveSearch(term){
  const status=document.getElementById('liveStatus');
  const list=document.getElementById('list');
 
- status.textContent='Consultando o Mercado Livre...';
-
- const mlUrl='https://api.mercadolibre.com/sites/MLB/search?q='+encodeURIComponent(q)+'&limit=20';
-
- async function fetchJson(url,timeoutMs){
-  const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),timeoutMs);
-
-  try{
-   const r=await fetch(url,{signal:controller.signal});
-
-   if(!r.ok){
-    throw new Error('HTTP '+r.status);
-   }
-
-   return await r.json();
-
-  }finally{
-   clearTimeout(timer);
-  }
- }
+ status.textContent='🔎 Consultando o Mercado Livre...';
 
  try{
+  const response=await fetch('/api/search?q='+encodeURIComponent(q));
 
-  let data=null;
-
-  try{
-   data=await fetchJson(mlUrl,8000);
-  }catch(e){
-   console.log('Consulta direta falhou.');
+  if(!response.ok){
+   throw new Error('HTTP '+response.status);
   }
 
-  if(!data){
-   try{
-    const proxyUrl='https://api.allorigins.win/raw?url='+encodeURIComponent(mlUrl);
-    data=await fetchJson(proxyUrl,15000);
-   }catch(e){
-    console.log('Primeiro proxy falhou.');
-   }
-  }
+  const data=await response.json();
 
-  if(!data){
-   const proxyUrl='https://corsproxy.io/?url='+encodeURIComponent(mlUrl);
-   data=await fetchJson(proxyUrl,15000);
+  if(data.error){
+   throw new Error(data.error);
   }
 
   const rows=(data.results||[]).map(x=>({
-   title:x.title,
+   title:x.title||'Produto sem título',
    price:Number(x.price)||0,
    sold:Number(x.sold_quantity)||0,
    available:Number(x.available_quantity)||0,
-   link:x.permalink,
-   thumb:x.thumbnail
+   link:x.permalink||'#',
+   thumb:x.thumbnail||''
   }));
 
   rows.sort((a,b)=>b.sold-a.sold);
@@ -157,7 +126,7 @@ async function liveSearch(term){
   }
 
   list.innerHTML=
-   '<div class="event"><strong>🔎 '+rows.length+' anúncios encontrados</strong>Dados da busca pública do Mercado Livre.</div>'+
+   '<div class="event"><strong>🔎 '+rows.length+' anúncios encontrados</strong>Dados reais do Mercado Livre.</div>'+
    rows.map((x,i)=>`
     <div class="product">
      <div class="top">
@@ -200,7 +169,7 @@ async function liveSearch(term){
        💰 Simular
       </button>
 
-      <a class="btn alt" href="${x.link||'#'}" target="_blank" rel="noopener">
+      <a class="btn alt" href="${x.link}" target="_blank" rel="noopener">
        Ver anúncio
       </a>
      </div>
@@ -210,7 +179,6 @@ async function liveSearch(term){
   status.textContent='✅ Atualizado agora com dados do Mercado Livre.';
 
  }catch(e){
-
   console.error(e);
 
   status.textContent='Não foi possível consultar agora.';
@@ -218,7 +186,6 @@ async function liveSearch(term){
   list.innerHTML='<div class="event"><strong>⚠️ Mercado Livre demorou para responder</strong>Tente novamente em alguns segundos.</div>';
  }
 }
-
 function trendSearch(q){
  document.getElementById('search').value=q;
  tab('garimpo',document.querySelector('.tab'));
