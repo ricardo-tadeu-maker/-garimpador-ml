@@ -7,9 +7,7 @@ export async function onRequestGet({ request }) {
       JSON.stringify({ error: "Digite um produto para pesquisar." }),
       {
         status: 400,
-        headers: {
-          "Content-Type": "application/json; charset=utf-8"
-        }
+        headers: { "Content-Type": "application/json; charset=utf-8" }
       }
     );
   }
@@ -20,12 +18,18 @@ export async function onRequestGet({ request }) {
     "&limit=20";
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
     const response = await fetch(mlUrl, {
+      method: "GET",
       headers: {
-        "Accept": "application/json",
-        "User-Agent": "GarimpadorML/1.0"
-      }
+        "Accept": "application/json"
+      },
+      signal: controller.signal
     });
+
+    clearTimeout(timeout);
 
     const text = await response.text();
 
@@ -54,10 +58,15 @@ export async function onRequestGet({ request }) {
 
   } catch (error) {
 
+    const message =
+      error?.name === "AbortError"
+        ? "Tempo limite de 15 segundos ao consultar o Mercado Livre."
+        : String(error?.message || error);
+
     return new Response(
       JSON.stringify({
         error: "Falha ao consultar o Mercado Livre.",
-        details: String(error?.message || error)
+        details: message
       }),
       {
         status: 502,
