@@ -91,27 +91,46 @@ export async function onRequestGet({ request, env }) {
       );
     }
 
+       const expiresAt = Date.now() + (data.expires_in * 1000);
+
+    await env.DB.prepare(`
+      INSERT INTO ml_tokens (
+        id,
+        user_id,
+        access_token,
+        refresh_token,
+        expires_at,
+        created_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        user_id = excluded.user_id,
+        access_token = excluded.access_token,
+        refresh_token = excluded.refresh_token,
+        expires_at = excluded.expires_at,
+        created_at = excluded.created_at
+    `)
+      .bind(
+        1,
+        String(data.user_id),
+        data.access_token,
+        data.refresh_token,
+        expiresAt,
+        Date.now()
+      )
+      .run();
+
     return new Response(
-      JSON.stringify(
-        {
-          success: true,
-          message:
-            "Autorização concluída. Guarde o access_token e o refresh_token.",
-          user_id: data.user_id,
-          expires_in: data.expires_in,
-          scope: data.scope,
-          access_token: data.access_token,
-          refresh_token: data.refresh_token,
-        },
-        null,
-        2
-      ),
+      JSON.stringify({
+        success: true,
+        message: "Mercado Livre autorizado com sucesso. Tokens armazenados com segurança."
+      }),
       {
         status: 200,
         headers: {
           "Content-Type": "application/json; charset=utf-8",
-          "Cache-Control": "no-store",
-        },
+          "Cache-Control": "no-store"
+        }
       }
     );
   } catch (error) {
