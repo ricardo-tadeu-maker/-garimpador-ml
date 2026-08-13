@@ -46,7 +46,7 @@ const accessToken = tokenRow.access_token;
       method: "GET",
      headers: {
   "Accept": "application/json",
-  "Authorization": `Bearer ${accessToken}`
+  
 },
       
       signal: controller.signal
