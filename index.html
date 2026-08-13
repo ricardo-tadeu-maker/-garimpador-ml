@@ -243,7 +243,7 @@ function render(){
 function filterCat(c,el){category=c;document.querySelectorAll('.filter').forEach(x=>x.classList.remove('active'));el.classList.add('active');render()}
 function useProduct(i){document.getElementById('cost').value=products[i].cost;document.getElementById('price').value=products[i].price;calc();tab('simulador',document.querySelectorAll('.tab')[3])}
 function calc(){let c=+document.getElementById('cost').value||0,p=+document.getElementById('price').value||0,f=(+document.getElementById('fee').value||0)/100,q=+document.getElementById('qty').value||0;let profit=p-(p*f)-c;document.getElementById('profit').textContent=money(profit);document.getElementById('margin').textContent=(p?profit/p*100:0).toFixed(1)+'%';document.getElementById('stock').textContent=money(profit*q);document.getElementById('roi').textContent=(c?profit/c*100:0).toFixed(1)+'%'}
-function tab(id,el){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');scrollTo(0,0)} function connectML(){
+function tab(id,el){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));if(el)el.classList.add('active');scrollTo(0,0)}
  function connectML(){
   window.location.href='/api/auth';
 } 
