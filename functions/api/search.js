@@ -48,7 +48,7 @@ const accessToken = tokenRow.access_token;
   "Accept": "application/json",
   "Authorization": `Bearer ${accessToken}`
 },
-      },
+      
       signal: controller.signal
     });
 
