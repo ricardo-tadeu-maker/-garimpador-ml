@@ -44,9 +44,9 @@ const accessToken = tokenRow.access_token;
 
     const response = await fetch(mlUrl, {
       method: "GET",
-     headers: {
+    headers: {
   "Accept": "application/json",
-  
+  "Authorization": `Bearer ${accessToken}`
 },
       
       signal: controller.signal
