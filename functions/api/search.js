@@ -1,4 +1,4 @@
-export async function onRequestGet({ request }) {
+export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const q = (url.searchParams.get("q") || "").trim();
 
@@ -11,7 +11,28 @@ export async function onRequestGet({ request }) {
       }
     );
   }
+const tokenRow = await env.DB.prepare(`
+  SELECT access_token
+  FROM ml_tokens
+  WHERE id = 1
+  LIMIT 1
+`).first();
 
+if (!tokenRow?.access_token) {
+  return new Response(
+    JSON.stringify({
+      error: "Mercado Livre ainda não está conectado."
+    }),
+    {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8"
+      }
+    }
+  );
+}
+
+const accessToken = tokenRow.access_token;
   const mlUrl =
     "https://api.mercadolibre.com/sites/MLB/search?q=" +
     encodeURIComponent(q) +
@@ -23,8 +44,10 @@ export async function onRequestGet({ request }) {
 
     const response = await fetch(mlUrl, {
       method: "GET",
-      headers: {
-        "Accept": "application/json"
+     headers: {
+  "Accept": "application/json",
+  "Authorization": `Bearer ${accessToken}`
+},
       },
       signal: controller.signal
     });
