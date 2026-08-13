@@ -120,19 +120,10 @@ export async function onRequestGet({ request, env }) {
       )
       .run();
 
-    return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Mercado Livre autorizado com sucesso. Tokens armazenados com segurança."
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-          "Cache-Control": "no-store"
-        }
-      }
-    );
+    return Response.redirect(
+  "https://garimpador-ml.pages.dev/?ml=connected",
+  302
+);
   } catch (error) {
     return new Response(
       JSON.stringify({
