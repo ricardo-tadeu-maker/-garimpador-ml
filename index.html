@@ -140,11 +140,11 @@ async function liveSearch(term){
  try{
   const response=await fetch('/api/search?q='+encodeURIComponent(q));
 
-  if(!response.ok){
-   throw new Error('HTTP '+response.status);
-  }
-
   const data=await response.json();
+
+  if(!response.ok){
+   throw new Error(data.error||'HTTP '+response.status);
+  }
 
   if(data.error){
    throw new Error(data.error);
@@ -223,9 +223,16 @@ async function liveSearch(term){
  }catch(e){
   console.error(e);
 
-  status.textContent='Não foi possível consultar agora.';
+  const message=String(e?.message||'');
+  const needsConnection=/não está conectado|autorização.*(expirou|revogada|recusada)|conecte novamente/i.test(message);
 
-  list.innerHTML='<div class="event"><strong>⚠️ Mercado Livre demorou para responder</strong>Tente novamente em alguns segundos.</div>';
+  status.textContent=needsConnection
+   ? 'A conexão com o Mercado Livre precisa ser refeita.'
+   : 'Não foi possível consultar agora.';
+
+  list.innerHTML=needsConnection
+   ? '<div class="event"><strong>⚠️ Conexão necessária</strong>'+escapeHtml(message)+'</div>'
+   : '<div class="event"><strong>⚠️ Mercado Livre demorou para responder</strong>Tente novamente em alguns segundos.</div>';
  }
 }
 function trendSearch(q){
@@ -248,27 +255,66 @@ function connectML(){
   window.location.href='/api/auth';
 }
 
-function checkMLConnection(){
+async function disconnectML(){
+  if(!confirm('Deseja desconectar o Mercado Livre?')) return;
+
+  const btn=document.getElementById('mlConnect');
+  const msg=document.getElementById('connectionMsg');
+  if(btn) btn.disabled=true;
+  if(msg){msg.style.display='block';msg.textContent='Desconectando Mercado Livre...'}
+
+  try{
+    const response=await fetch('/api/auth/disconnect',{method:'POST'});
+    const data=await response.json();
+    if(!response.ok) throw new Error(data.error||'Não foi possível desconectar.');
+    setDisconnected();
+    if(msg){msg.style.display='block';msg.textContent='Mercado Livre desconectado.'}
+  }catch(error){
+    if(msg){msg.style.display='block';msg.textContent=error.message||'Não foi possível desconectar agora.'}
+  }finally{
+    if(btn) btn.disabled=false;
+  }
+}
+
+function setConnected(){
+  const btn=document.getElementById('mlConnect');
+  if(btn){
+    btn.textContent='✅ Mercado Livre conectado';
+    btn.style.color='#16a34a';
+    btn.onclick=disconnectML;
+  }
+}
+
+function setDisconnected(){
+  const btn=document.getElementById('mlConnect');
+  if(btn){
+    btn.textContent='🟢 Conectar Mercado Livre';
+    btn.style.color='';
+    btn.onclick=connectML;
+  }
+}
+
+async function checkMLConnection(){
   const params = new URLSearchParams(window.location.search);
+  const msg = document.getElementById('connectionMsg');
 
   if(params.get('ml') === 'connected'){
-    const btn = document.getElementById('mlConnect');
-    const msg = document.getElementById('connectionMsg');
-
-    if(btn){
-      btn.textContent = '✅ Mercado Livre conectado';
-      btn.style.color = '#16a34a';
-      btn.onclick = function(){
-        alert('O Mercado Livre já está conectado!');
-      };
-    }
-
+    setConnected();
     if(msg){
       msg.style.display = 'block';
       msg.textContent = '✅ Mercado Livre conectado com sucesso!';
     }
 
     window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  try{
+    const response=await fetch('/api/auth/status',{cache:'no-store'});
+    const data=await response.json();
+    if(response.ok && data.connected) setConnected();
+    else if(response.ok) setDisconnected();
+  }catch(error){
+    // Mantém o botão utilizável mesmo se a verificação de status falhar.
   }
 }
 
