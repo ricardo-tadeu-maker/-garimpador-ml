@@ -100,11 +100,16 @@ export async function onRequestGet({ request, env }) {
 `).bind(
   await sha256(connectionSecret),
   await sha256(connectionSecret),
-  now,
-  now
-),
+  
 
-    const headers = new Headers({ Location: "https://garimpador-ml.pages.dev/?ml=connected" });
+    now,
+    now
+  ),
+]);
+
+const headers = new Headers({ Location: "https://garimpador-ml.pages.dev/?ml=connected" });
+
+    
     
    headers.append("Set-Cookie", "ml_connection=" + connectionSecret + "; Max-Age=" + CONNECTION_COOKIE_MAX_AGE + "; Path=/api/auth; HttpOnly; Secure; SameSite=Strict");
     return new Response(null, { status: 302, headers });
