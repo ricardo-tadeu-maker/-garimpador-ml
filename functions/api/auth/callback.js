@@ -98,7 +98,7 @@ export async function onRequestGet({ request, env }) {
 
     const headers = new Headers({ Location: "https://garimpador-ml.pages.dev/?ml=connected" });
     headers.append("Set-Cookie", clearStateCookie);
-   headers.append("Set-Cookie", `ml_connection=${connectionSecret}; Max-Age=${CONNECTION_COOKIE_MAX_AGE}; Path=/api/auth; HttpOnly; Secure; SameSite=Strict`);
+   headers.append("Set-Cookie", "ml_connection=" + connectionSecret + "; Max-Age=" + CONNECTION_COOKIE_MAX_AGE + "; Path=/api/auth; HttpOnly; Secure; SameSite=Strict");
     return new Response(null, { status: 302, headers });
   } catch (error) {
     return json({ error: "Falha ao comunicar com o Mercado Livre.", details: String(error?.message || error) }, 502, { "Set-Cookie": clearStateCookie });
