@@ -93,7 +93,7 @@ export async function onRequestGet({ request, env }) {
         ON CONFLICT(id) DO UPDATE SET
           secret_hash = excluded.secret_hash,
           created_at = excluded.created_at
-            `).bind((await sha256(connectionSecret), await sha256(connectionSecret), now),
+            `).bind(await sha256(connectionSecret), await sha256(connectionSecret), now),
     ]);
 
     const headers = new Headers({ Location: "https://garimpador-ml.pages.dev/?ml=connected" });
