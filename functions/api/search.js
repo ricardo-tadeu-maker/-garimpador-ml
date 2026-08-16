@@ -113,15 +113,17 @@ async function searchMercadoLivre(url, accessToken) {
   const timeout = setTimeout(() => controller.abort(), 15000);
   try {
     return await fetch(url, {
-      method: "GET",
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-    });
+  method: "GET",
+  headers: {
+    Accept: "application/json",
+    Authorization: `Bearer ${accessToken}`,
+  },
+  signal: controller.signal,
+});
   } finally {
     clearTimeout(timeout);
   }
 }
-
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const q = (url.searchParams.get("q") || "").trim();
