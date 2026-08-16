@@ -1,4 +1,5 @@
 const TOKEN_REFRESH_WINDOW_MS = 60 * 1000;
+const ML_REQUEST_TIMEOUT_MS = 15 * 1000;
 const JSON_HEADERS = { "Content-Type": "application/json; charset=utf-8" };
 
 function json(body, status) {
@@ -20,6 +21,21 @@ async function invalidateToken(env, refreshToken) {
   ).bind(refreshToken).run();
 }
 
+async function fetchMercadoLivre(url, options, operation) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), ML_REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error(`Tempo limite de 15 segundos ao ${operation}.`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function refreshAccessToken(env, tokenRow) {
   const body = new URLSearchParams({
     grant_type: "refresh_token",
@@ -34,14 +50,14 @@ async function refreshAccessToken(env, tokenRow) {
 
   let response;
   try {
-    response = await fetch("https://api.mercadolibre.com/oauth/token", {
+    response = await fetchMercadoLivre("https://api.mercadolibre.com/oauth/token", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: body.toString(),
-    });
+    }, "renovar a autorização do Mercado Livre");
   } catch (error) {
     return { error: "temporary", details: String(error?.message || error) };
   }
@@ -109,20 +125,13 @@ async function getAccessToken(env, forceRefresh = false) {
 }
 
 async function searchMercadoLivre(url, accessToken) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    return await fetch(url, {
-  method: "GET",
-  headers: {
-    Accept: "application/json",
-    Authorization: `Bearer ${accessToken}`,
-  },
-  signal: controller.signal,
-});
-  } finally {
-    clearTimeout(timeout);
-  }
+  return fetchMercadoLivre(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  }, "consultar o Mercado Livre");
 }
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
@@ -135,7 +144,7 @@ export async function onRequestGet({ request, env }) {
     return json({ error: "Mercado Livre não está conectado ou a autorização expirou. Conecte novamente." }, 401);
   }
   if (token.error === "config") return json({ error: "Credenciais do Mercado Livre não configuradas." }, 500);
-  if (token.error) return json({ error: "Não foi possível renovar a conexão com o Mercado Livre." }, 503);
+  if (token.error) return json({ error: "Não foi possível renovar a conexão com o Mercado Livre.", details: token.details }, 503);
 
   const mlUrl = "https://api.mercadolibre.com/sites/MLB/search?q=" + encodeURIComponent(q) + "&limit=20";
   try {
@@ -147,7 +156,7 @@ export async function onRequestGet({ request, env }) {
       if (token.error === "disconnected" || token.error === "invalid") {
         return json({ error: "A autorização do Mercado Livre expirou ou foi revogada. Conecte novamente." }, 401);
       }
-      if (token.error) return json({ error: "Não foi possível renovar a conexão com o Mercado Livre." }, 503);
+      if (token.error) return json({ error: "Não foi possível renovar a conexão com o Mercado Livre.", details: token.details }, 503);
       response = await searchMercadoLivre(mlUrl, token.token);
       retriedAfterAuthFailure = true;
     }
@@ -169,7 +178,7 @@ if (retriedAfterAuthFailure && (response.status === 401 || response.status === 4
       headers: { ...JSON_HEADERS, "Cache-Control": "no-store" },
     });
   } catch (error) {
-    const details = error?.name === "AbortError" ? "Tempo limite de 15 segundos ao consultar o Mercado Livre." : String(error?.message || error);
+    const details = String(error?.message || error);
     return json({ error: "Falha ao consultar o Mercado Livre.", details }, 502);
   }
 }

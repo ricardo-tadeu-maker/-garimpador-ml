@@ -143,7 +143,8 @@ async function liveSearch(term){
   const data=await response.json();
 
   if(!response.ok){
-   throw new Error(data.error||'HTTP '+response.status);
+   const detail=data.details ? ': '+String(data.details) : '';
+   throw new Error((data.error||'HTTP '+response.status)+detail);
   }
 
   if(data.error){
@@ -232,7 +233,7 @@ async function liveSearch(term){
 
   list.innerHTML=needsConnection
    ? '<div class="event"><strong>⚠️ Conexão necessária</strong>'+escapeHtml(message)+'</div>'
-   : '<div class="event"><strong>⚠️ Mercado Livre demorou para responder</strong>Tente novamente em alguns segundos.</div>';
+   : '<div class="event"><strong>⚠️ Falha ao consultar o Mercado Livre</strong>'+escapeHtml(message||'Tente novamente em alguns segundos.')+'</div>';
  }
 }
 function trendSearch(q){
@@ -311,8 +312,15 @@ async function checkMLConnection(){
   try{
     const response=await fetch('/api/auth/status',{cache:'no-store'});
     const data=await response.json();
-    if(response.ok && data.connected) setConnected();
-    else if(response.ok) setDisconnected();
+    if(response.ok && data.connected) {
+      setConnected();
+      if(data.token_status === 'expired' && msg){
+        msg.style.display='block';
+        msg.textContent='A sessão do Mercado Livre expirou; a próxima busca tentará renová-la.';
+      }
+    } else if(response.ok) {
+      setDisconnected();
+    }
   }catch(error){
     // Mantém o botão utilizável mesmo se a verificação de status falhar.
   }
