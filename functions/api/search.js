@@ -135,7 +135,7 @@ export async function onRequestGet({ request, env }) {
   if (token.error === "config") return json({ error: "Credenciais do Mercado Livre não configuradas." }, 500);
   if (token.error) return json({ error: "Não foi possível renovar a conexão com o Mercado Livre." }, 503);
 
-  const mlUrl = "https://api.mercadolibre.com/sites/MLB/search?q=" + encodeURIComponent(q) + "&limit=20";
+  const mlUrl = "https://api.mercadolibre.com/users/me";
   try {
     let response = await searchMercadoLivre(mlUrl, token.token);
     let retriedAfterAuthFailure = false;
