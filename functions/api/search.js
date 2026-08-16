@@ -152,11 +152,13 @@ export async function onRequestGet({ request, env }) {
 
     const text = await response.text();
     if (!response.ok) {
-      if (retriedAfterAuthFailure && (response.status === 401 || response.status === 403)) {
-        await env.DB.prepare("DELETE FROM ml_tokens WHERE id = 1 AND access_token = ?")
-          .bind(token.token).run();
-        return json({ error: "A autorização do Mercado Livre foi recusada. Conecte novamente." }, 401);
-      }
+if (retriedAfterAuthFailure && (response.status === 401 || response.status === 403)) {
+  return json({
+    error: "DIAGNOSTICO_ML",
+    ml_status: response.status,
+    details: text.slice(0, 1000)
+  }, 502);
+}
       return json({ error: "Mercado Livre retornou HTTP " + response.status, details: text.slice(0, 500) }, 502);
     }
 
